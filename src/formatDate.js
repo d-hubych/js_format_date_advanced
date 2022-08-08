@@ -50,38 +50,36 @@
  */
 
 function formatDate(date, fromFormat, toFormat) {
-  const splitedDate = date.split(fromFormat[3]);
-  const newFormatToDate = toFormat.slice(0, 3);
-  const curentYear = splitedDate[fromFormat.findIndex(el => el.includes('Y'))];
-  const dateObj = {
-    DD: splitedDate[fromFormat.findIndex(el => el.includes('D'))],
-    MM: splitedDate[fromFormat.findIndex(el => el.includes('M'))],
-    separator: [toFormat[3]],
+  const dateBase = {
+    'DD': null,
+    'MM': null,
+    'YY': null,
+    'YYYY': null,
+    'separator': toFormat[3],
   };
+  const splitedOldData = date.split(fromFormat[3]);
 
-  if (curentYear.length > 2) {
-    dateObj.YY = curentYear.slice(2);
-    dateObj.YYYY = curentYear;
-  } else {
-    dateObj.YY = curentYear;
-
-    if (curentYear < 30) {
-      dateObj.YYYY = '20' + curentYear;
-    } else {
-      dateObj.YYYY = '19' + curentYear;
-    }
-    // curentYear < 30
-    //   ? dateObj.YYYY = '20' + curentYear
-    //   : dateObj.YYYY = '19' + curentYear;
-    // ^^^^^^^- Just want to understand why commented code above make this:
-    // --->   "error  Expected an assignment or function call and instead saw an expression"
+  for (let i = 0; i <= 2; i++) {
+    dateBase[fromFormat[i]] = splitedOldData[i];
   }
 
-  newFormatToDate.forEach((element, i, arr) => {
-    arr[i] = dateObj[element];
+  if (dateBase.YYYY !== null) {
+    dateBase.YY = (dateBase.YYYY).toString().slice(2);
+  } else {
+    if (dateBase.YY < 30) {
+      dateBase.YYYY = '20' + dateBase.YY;
+    } else {
+      dateBase.YYYY = '19' + dateBase.YY;
+    }
+  }
+
+  const result = [];
+
+  toFormat.slice(0, 3).forEach(function(el, i) {
+    result[i] = dateBase[el];
   });
 
-  return newFormatToDate.join(dateObj.separator);
+  return result.join(dateBase.separator);
 }
 
 module.exports = formatDate;
